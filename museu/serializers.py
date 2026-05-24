@@ -113,6 +113,60 @@ class ExposicaoSerializer(serializers.ModelSerializer):
         model = Exposicao
         fields = '__all__'
 
+    def validate(self, attrs):
+        data_inicio = attrs.get('data_inicio', getattr(self.instance, 'data_inicio', None))
+        data_fim = attrs.get('data_fim', getattr(self.instance, 'data_fim', None))
+        if data_inicio and data_fim and data_fim < data_inicio:
+            raise serializers.ValidationError(
+                'A data fim deve ser igual ou posterior à data início.'
+            )
+        return attrs
+
+
+class ExposicaoObraSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExposicaoObra
+        fields = '__all__'
+
+
+class ArtistaObraSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArtistaObra
+        fields = '__all__'
+
+
+class RestauracaoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Restauracao
+        fields = '__all__'
+
+
+class PagamentoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pagamento
+        fields = '__all__'
+
+    def validate(self, attrs):
+        ingresso = attrs.get('ingresso')
+        reserva = attrs.get('reserva')
+        restauracao = attrs.get('restauracao')
+
+        if self.instance:
+            if 'ingresso' not in attrs:
+                ingresso = self.instance.ingresso
+            if 'reserva' not in attrs:
+                reserva = self.instance.reserva
+            if 'restauracao' not in attrs:
+                restauracao = self.instance.restauracao
+
+        vinculos = [ingresso, reserva, restauracao]
+        preenchidos = sum(1 for vinculo in vinculos if vinculo is not None)
+        if preenchidos != 1:
+            raise serializers.ValidationError(
+                'Informe exatamente um vínculo: ingresso, reserva ou restauração.'
+            )
+        return attrs
+
 
 class IngressoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -130,3 +184,8 @@ class AvaliacaoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Avaliacao
         fields = '__all__'
+
+    def validate_nota(self, valor):
+        if valor < 1 or valor > 5:
+            raise serializers.ValidationError('A nota deve estar entre 1 e 5.')
+        return valor
