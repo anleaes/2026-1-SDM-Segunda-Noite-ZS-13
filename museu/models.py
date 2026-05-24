@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils import timezone
 
 
 class Usuario(AbstractUser):
@@ -72,10 +74,13 @@ class Visitante(Usuario):
             valor=valor,
         )
 
-    def realizar_reserva(self, exposicao, quantidade_pessoas):
+    def realizar_reserva(self, exposicao, quantidade_pessoas, data_reserva=None):
+        if data_reserva is None:
+            data_reserva = timezone.now().date()
         return Reserva.objects.create(
             visitante=self,
             exposicao=exposicao,
+            data_reserva=data_reserva,
             quantidade_pessoas=quantidade_pessoas,
         )
 
@@ -216,6 +221,10 @@ class Exposicao(models.Model):
         self.status = 'encerrada'
         self.save()
 
+    def clean(self):
+        if self.data_fim and self.data_inicio and self.data_fim < self.data_inicio:
+            raise ValidationError('A data fim deve ser igual ou posterior à data início.')
+
 
 class ExposicaoObra(models.Model):
     """Classe associativa entre Exposição e Obra de Arte."""
@@ -294,7 +303,8 @@ class Restauracao(models.Model):
         return f'Restauração de {self.obra.titulo}'
 
     def iniciar_restauracao(self):
-                self.data_inicio = timezone.now().date()
+        from django.utils import timezone
+        self.data_inicio = timezone.now().date()
         self.save()
 
     def finalizar_restauracao(self, data_fim):
@@ -343,6 +353,18 @@ class Pagamento(models.Model):
     class Meta:
         verbose_name = 'Pagamento'
         verbose_name_plural = 'Pagamentos'
+
+    def clean(self):
+        vinculos = [self.ingresso_id, self.reserva_id, self.restauracao_id]
+        preenchidos = sum(1 for vinculo in vinculos if vinculo is not None)
+        if preenchidos != 1:
+            raise ValidationError(
+                'Informe exatamente um vínculo: ingresso, reserva ou restauração.'
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def realizar_pagamento(self):
         self.status = 'pago'
@@ -449,6 +471,12 @@ class Avaliacao(models.Model):
     class Meta:
         verbose_name = 'Avaliação'
         verbose_name_plural = 'Avaliações'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['visitante', 'exposicao'],
+                name='unique_avaliacao_por_visitante',
+            ),
+        ]
 
     def __str__(self):
         return f'Avaliação {self.nota} - {self.exposicao.titulo}'
