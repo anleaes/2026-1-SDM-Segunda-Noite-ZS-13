@@ -1,0 +1,306 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+title Sistema de Gerenciamento de Museus e Galerias de Arte\n(versao com melhorias de usabilidade e validacao)
+
+' =========================
+' ENUMERACOES
+' =========================
+
+enum StatusExposicao {
+  PLANEJADA
+  EM_ANDAMENTO
+  ENCERRADA
+}
+
+enum StatusPagamento {
+  PENDENTE
+  PAGO
+  ESTORNADO
+}
+
+enum StatusIngresso {
+  ATIVO
+  UTILIZADO
+  CANCELADO
+}
+
+enum StatusReserva {
+  PENDENTE
+  CONFIRMADA
+  CANCELADA
+}
+
+enum MetodoPagamento {
+  PIX
+  CARTAO
+  DINHEIRO
+}
+
+' =========================
+' CLASSES
+' =========================
+
+class Usuario {
+  - id: int
+  - dataNascimento: Date
+  - nome: String
+  - telefone: String
+  - email: String
+  - cpf: String
+  - login: String
+  - senha: String
+  + cadastrarUsuario()
+  + atualizarUsuario()
+  + excluirUsuario()
+}
+
+class Funcionario {
+  - cargo: String
+  - salario: double
+  - dataAdmissao: Date
+  + gerenciarExposicao()
+  + cadastrarObra()
+  + gerarRelatorio()
+}
+
+class Visitante {
+  - dataCadastro: Date
+  + comprarIngresso()
+  + realizarReserva()
+}
+
+class Artista {
+  - nacionalidade: String
+  - estiloArtistico: String
+  + cadastrarArtista()
+  + atualizarPortfolio()
+}
+
+class Galeria {
+  - id: int
+  - nome: String
+  - descricao: String
+  - endereco: String
+  - aberta: boolean
+  + abrirGaleria()
+  + fecharGaleria()
+}
+
+class Exposicao {
+  - id: int
+  - titulo: String
+  - descricao: String
+  - dataInicio: Date
+  - dataFim: Date
+  - status: StatusExposicao
+  + iniciarExposicao()
+  + encerrarExposicao()
+  ..
+  {constraint} dataFim >= dataInicio
+}
+
+class ObraArte {
+  - id: int
+  - titulo: String
+  - tecnica: String
+  - anoCriacao: int
+  - valorEstimado: double
+  + restaurar()
+  + calcularValor()
+}
+
+class CategoriaObra {
+  - id: int
+  - nome: String
+  - descricao: String
+  + cadastrarCategoria()
+}
+
+class CertificadoAutenticidade {
+  - codigo: String
+  - dataEmissao: Date
+  - orgaoResponsavel: String
+  + validarCertificado()
+}
+
+class Restauracao {
+  - id: int
+  - dataInicio: Date
+  - dataFim: Date {opcional}
+  - descricao: String
+  - custo: double
+  + iniciarRestauracao()
+  + finalizarRestauracao()
+}
+
+class Ingresso {
+  - id: int
+  - tipo: String
+  - valor: double
+  - dataCompra: Date
+  - status: StatusIngresso
+  + gerarIngresso()
+}
+
+class Reserva {
+  - id: int
+  - dataReserva: Date
+  - quantidadePessoas: int
+  - status: StatusReserva
+  + confirmarReserva()
+  + cancelarReserva()
+}
+
+class Pagamento {
+  - id: int
+  - valor: double
+  - dataPagamento: Date
+  - metodo: MetodoPagamento
+  - status: StatusPagamento
+  + realizarPagamento()
+  + estornarPagamento()
+  ..
+  {constraint} vincula-se a exatamente\num: Ingresso, Reserva ou Restauracao
+}
+
+class Avaliacao {
+  - id: int
+  - nota: int
+  - comentario: String
+  - dataAvaliacao: Date
+  + avaliarExposicao()
+  ..
+  {constraint} nota entre 1 e 5
+  {constraint} unique(visitante, exposicao)
+}
+
+' =========================
+' CLASSES ASSOCIATIVAS
+' =========================
+
+class ExposicaoObra {
+  - dataEntrada: Date
+  - posicaoSala: String
+  - iluminacaoEspecial: String
+  - statusConservacao: String
+  - estiloObra: String
+}
+
+class ArtistaObra {
+  - funcao: String
+  - dataParticipacao: Date
+}
+
+' =========================
+' CAMADA DE USABILIDADE
+' =========================
+
+package "Usabilidade" #E8F4FD {
+  class AdminWeb {
+    + buscarRegistros()
+    + filtrarPorStatus()
+    + listarColunasRelevantes()
+    + autocompleteRelacionamentos()
+  }
+
+  class ApiRest {
+    + paginarResultados()
+    + filtrarQueryString()
+    + buscarPorTexto()
+    + ordenarCampos()
+    + mensagensErroPtBr()
+  }
+}
+
+note bottom of AdminWeb
+  Django Admin:
+  - list_display
+  - search_fields
+  - list_filter
+  - autocomplete_fields
+end note
+
+note bottom of ApiRest
+  Exemplos:
+  GET /api/exposicoes/?status=em_andamento
+  GET /api/galerias/?aberta=true&search=MASP
+  GET /api/obras/?ordering=-valor_estimado
+end note
+
+' =========================
+' HERANCA
+' =========================
+
+Usuario <|-- Funcionario
+Usuario <|-- Visitante
+Usuario <|-- Artista
+
+' =========================
+' RELACIONAMENTOS PRINCIPAIS
+' =========================
+
+Galeria "1" -- "*" Exposicao : possui
+
+CategoriaObra "1" -- "*" ObraArte : classifica
+
+Funcionario "*" -- "1" Galeria : trabalha em
+
+Visitante "1" -- "*" Ingresso : compra
+Visitante "1" -- "*" Reserva : realiza
+Visitante "1" -- "*" Avaliacao : faz
+
+Ingresso "*" -- "1" Exposicao : acesso para
+Reserva "*" -- "1" Exposicao : reserva para
+
+Ingresso "1" -- "0..1" Pagamento : pagamento
+Reserva "1" -- "0..1" Pagamento : pagamento
+
+ObraArte "1" -- "*" Restauracao : passa por
+Funcionario "1" -- "*" Restauracao : realiza
+
+Restauracao "1" -- "0..1" Pagamento : gera
+
+ObraArte "1" -- "1" CertificadoAutenticidade : possui
+
+Exposicao "1" -- "*" Avaliacao : recebe
+
+Exposicao ..> StatusExposicao : usa
+Pagamento ..> StatusPagamento : usa
+Pagamento ..> MetodoPagamento : usa
+Ingresso ..> StatusIngresso : usa
+Reserva ..> StatusReserva : usa
+
+' =========================
+' MANY TO MANY
+' =========================
+
+Exposicao "1" -- "*" ExposicaoObra
+ObraArte "1" -- "*" ExposicaoObra
+
+Artista "1" -- "*" ArtistaObra
+ObraArte "1" -- "*" ArtistaObra
+
+' =========================
+' USABILIDADE -> DOMINIO
+' =========================
+
+AdminWeb ..> Galeria : gerencia
+AdminWeb ..> Exposicao : gerencia
+AdminWeb ..> Ingresso : gerencia
+ApiRest ..> Exposicao : consulta/filtra
+ApiRest ..> Galeria : consulta/filtra
+ApiRest ..> Visitante : cadastra
+
+' =========================
+' ORGANIZACAO VISUAL
+' =========================
+
+Galeria -[hidden]- CategoriaObra
+Exposicao -[hidden]- ObraArte
+Ingresso -[hidden]- Reserva
+Pagamento -[hidden]- Restauracao
+AdminWeb -[hidden]- ApiRest
+
+@enduml
