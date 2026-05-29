@@ -93,19 +93,13 @@ if DB_ENGINE == 'oracle':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.oracle',
-            'NAME': os.getenv('ORACLE_NAME', 'localhost:1521/XEPDB1'),
-            'USER': os.getenv('ORACLE_USER', 'museu'),
-            'PASSWORD': os.getenv('ORACLE_PASSWORD', ''),
+            'NAME': 'Gerenciamentodemuseu1',
+            'USER': 'admin',
+            'PASSWORD': 'Nathanputinho2',
+            'HOST': 'localhost',
+            'PORT': '8000',
         }
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
