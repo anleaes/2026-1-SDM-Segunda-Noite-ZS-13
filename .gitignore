@@ -7,8 +7,9 @@ venv/
 *.egg-info/
 .DS_Store
 APRESENTACAO.md
-wallet/*
-!wallet/README.md
+
+# Oracle wallet (credenciais — baixar localmente, ver ORACLE.md)
+wallet/
 
 /apps/*/__pycache__/*
 
