@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+*.sqlite3
+.env
+.venv/
+venv/
+*.egg-info/
+.DS_Store
+APRESENTACAO.md
+
+# Oracle wallet (credenciais — baixar localmente, ver ORACLE.md)
+wallet/
+
+/apps/*/__pycache__/*
+
+# Frontends (fora do repositório — só backend Django)
+frontend/
+frontend-vue/
+package-lock.json
