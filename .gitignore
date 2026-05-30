@@ -11,3 +11,8 @@ wallet/*
 !wallet/README.md
 
 /apps/*/__pycache__/*
+
+# Frontends (fora do repositório — só backend Django)
+frontend/
+frontend-vue/
+package-lock.json
