@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Museu Galeria",
+    "slug": "museu-galeria",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "museugaleria",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#1a1a2e"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sdm.museugaleria"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#1a1a2e"
+      },
+      "package": "com.sdm.museugaleria"
+    },
+    "plugins": ["expo-router"]
+  }
+}

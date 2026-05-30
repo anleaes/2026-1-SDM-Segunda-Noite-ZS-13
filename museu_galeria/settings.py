@@ -11,12 +11,16 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+APPS_DIR = os.path.join(BASE_DIR, 'apps')
+sys.path.insert(0, APPS_DIR)
 
 load_dotenv(BASE_DIR / '.env')
 
@@ -33,7 +37,17 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
 
 
 # Application definition
@@ -45,13 +59,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'django_filters',
-    'museu',
+    'contas.apps.ContasConfig',
+    'galerias.apps.GaleriasConfig',
+    'categorias.apps.CategoriasConfig',
+    'obras.apps.ObrasConfig',
+    'exposicoes.apps.ExposicoesConfig',
+    'visitacao.apps.VisitacaoConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -90,14 +111,29 @@ WSGI_APPLICATION = 'museu_galeria.wsgi.application'
 DB_ENGINE = os.getenv('DB_ENGINE', 'sqlite')
 
 if DB_ENGINE == 'oracle':
+    oracle_options = {}
+    wallet_dir = os.getenv('ORACLE_WALLET_DIR')
+    if wallet_dir:
+        wallet_path = BASE_DIR / wallet_dir
+        oracle_options['config_dir'] = str(wallet_path)
+        wallet_password = os.getenv('ORACLE_WALLET_PASSWORD')
+        if wallet_password:
+            oracle_options['wallet_password'] = wallet_password
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.oracle',
-            'NAME': 'Gerenciamentodemuseu1',
-            'USER': 'admin',
-            'PASSWORD': 'Nathanputinho2',
-            'HOST': 'localhost',
-            'PORT': '8000',
+            'NAME': os.getenv('ORACLE_NAME', 'gerenciamentodemuseu1_high'),
+            'USER': os.getenv('ORACLE_USER', 'admin'),
+            'PASSWORD': os.getenv('ORACLE_PASSWORD', ''),
+            'OPTIONS': oracle_options,
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 
@@ -142,9 +178,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'museu.Usuario'
+AUTH_USER_MODEL = 'contas.Usuario'
 
 REST_FRAMEWORK = {
+    # SPA usa localStorage, sem cookie de sessão — evita CSRF 403 nos POST da API
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
@@ -156,3 +194,8 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',
     ],
 }
+
+CORS_ALLOW_ALL_ORIGINS = DEBUG
+
+# URL do frontend Vue (link "Ver site" no Django Admin)
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')

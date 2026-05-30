@@ -7,3 +7,7 @@ venv/
 *.egg-info/
 .DS_Store
 APRESENTACAO.md
+wallet/*
+!wallet/README.md
+
+/apps/*/__pycache__/*
