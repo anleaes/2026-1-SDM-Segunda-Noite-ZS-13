@@ -27,6 +27,7 @@ class Exposicao(models.Model):
         db_table = 'museu_exposicao'
         verbose_name = 'Exposição'
         verbose_name_plural = 'Exposições'
+        ordering = ['-data_inicio', 'titulo']
 
     def __str__(self):
         return self.titulo
