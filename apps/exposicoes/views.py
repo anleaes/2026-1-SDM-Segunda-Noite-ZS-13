@@ -1,3 +1,5 @@
+"""ViewSets REST do app exposicoes."""
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -8,6 +10,8 @@ from .serializers import ExposicaoObraSerializer, ExposicaoSerializer
 
 
 class ExposicaoViewSet(viewsets.ModelViewSet):
+    """CRUD de exposições."""
+
     queryset = Exposicao.objects.select_related('galeria')
     serializer_class = ExposicaoSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -17,6 +21,8 @@ class ExposicaoViewSet(viewsets.ModelViewSet):
 
 
 class ExposicaoObraViewSet(viewsets.ModelViewSet):
+    """CRUD de obras vinculadas a exposições."""
+
     queryset = ExposicaoObra.objects.select_related('exposicao', 'obra')
     serializer_class = ExposicaoObraSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
