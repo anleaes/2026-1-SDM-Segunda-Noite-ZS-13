@@ -1,3 +1,5 @@
+"""Views de autenticação, cadastro e gestão de contas (API REST)."""
+
 from django.contrib.auth import authenticate
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -21,6 +23,8 @@ from .serializers import (
 
 
 class UsuarioViewSet(viewsets.ModelViewSet):
+    """CRUD de usuários base."""
+
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
     filter_backends = [SearchFilter, OrderingFilter]
@@ -29,6 +33,8 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 
 
 class FuncionarioViewSet(viewsets.ModelViewSet):
+    """CRUD de funcionários."""
+
     queryset = Funcionario.objects.select_related('galeria')
     serializer_class = FuncionarioSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -38,6 +44,8 @@ class FuncionarioViewSet(viewsets.ModelViewSet):
 
 
 class VisitanteViewSet(viewsets.ModelViewSet):
+    """CRUD de visitantes."""
+
     queryset = Visitante.objects.all()
     serializer_class = VisitanteSerializer
     filter_backends = [SearchFilter, OrderingFilter]
@@ -46,6 +54,8 @@ class VisitanteViewSet(viewsets.ModelViewSet):
 
 
 class ArtistaViewSet(viewsets.ModelViewSet):
+    """CRUD de artistas."""
+
     queryset = Artista.objects.all()
     serializer_class = ArtistaSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -55,6 +65,7 @@ class ArtistaViewSet(viewsets.ModelViewSet):
 
 
 def _detect_role(user):
+    """Retorna o papel do usuário: artista, funcionario, visitante, admin ou usuario."""
     if Artista.objects.filter(pk=user.pk).exists():
         return 'artista'
     if Funcionario.objects.filter(pk=user.pk).exists():
@@ -67,6 +78,7 @@ def _detect_role(user):
 
 
 def _user_payload(user):
+    """Monta o dicionário serializado do usuário conforme o papel."""
     role = _detect_role(user)
     payload = {
         'id': user.id,
@@ -106,6 +118,7 @@ def _user_payload(user):
 
 
 def _get_user_instance(user_id):
+    """Busca usuário por PK ou retorna None se não existir."""
     try:
         return Usuario.objects.get(pk=user_id)
     except Usuario.DoesNotExist:
@@ -114,6 +127,8 @@ def _get_user_instance(user_id):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
+    """Autenticação por username e senha."""
+
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -138,6 +153,8 @@ class LoginView(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RegisterView(APIView):
+    """Cadastro de novo visitante."""
+
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -149,6 +166,8 @@ class RegisterView(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AccountView(APIView):
+    """Consulta, atualização e exclusão de conta por ID."""
+
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
@@ -184,6 +203,8 @@ class AccountView(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ChangePasswordView(APIView):
+    """Alteração de senha com validação da senha atual."""
+
     permission_classes = [AllowAny]
 
     def post(self, request, pk):
