@@ -1,0 +1,11 @@
+{
+  "name": "museu-galeria-oracle-tools",
+  "private": true,
+  "description": "Scripts auxiliares Node para teste de conexão Oracle (opcional)",
+  "scripts": {
+    "oracle:test": "node oracle_connect_test.js"
+  },
+  "dependencies": {
+    "oracledb": "^6.10.0"
+  }
+}
