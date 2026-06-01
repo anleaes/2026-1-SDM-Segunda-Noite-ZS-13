@@ -64,21 +64,22 @@ class ArtistaViewSet(viewsets.ModelViewSet):
     ordering_fields = ['username', 'nacionalidade']
 
 
+_PROFILE_MODELS = (Artista, Funcionario, Visitante)
+
+
 def _detect_role(user):
-    """Retorna o papel do usuário: artista, funcionario, visitante, admin ou usuario."""
-    if Artista.objects.filter(pk=user.pk).exists():
-        return 'artista'
-    if Funcionario.objects.filter(pk=user.pk).exists():
-        return 'funcionario'
-    if Visitante.objects.filter(pk=user.pk).exists():
-        return 'visitante'
     if user.is_superuser:
         return 'admin'
+    if isinstance(user, Artista):
+        return 'artista'
+    if isinstance(user, Funcionario):
+        return 'funcionario'
+    if isinstance(user, Visitante):
+        return 'visitante'
     return 'usuario'
 
 
 def _user_payload(user):
-    """Monta o dicionário serializado do usuário conforme o papel."""
     role = _detect_role(user)
     payload = {
         'id': user.id,
@@ -92,33 +93,34 @@ def _user_payload(user):
         'role': role,
     }
 
-    if role == 'visitante':
-        visitante = Visitante.objects.filter(pk=user.pk).first()
-        if visitante:
-            payload['data_cadastro'] = visitante.data_cadastro
-    elif role == 'funcionario':
-        funcionario = Funcionario.objects.filter(pk=user.pk).select_related('galeria').first()
-        if funcionario:
-            payload.update({
-                'cargo': funcionario.cargo,
-                'salario': str(funcionario.salario),
-                'data_admissao': funcionario.data_admissao,
-                'galeria': funcionario.galeria_id,
-                'galeria_nome': funcionario.galeria.nome if funcionario.galeria else None,
-            })
-    elif role == 'artista':
-        artista = Artista.objects.filter(pk=user.pk).first()
-        if artista:
-            payload.update({
-                'nacionalidade': artista.nacionalidade,
-                'estilo_artistico': artista.estilo_artistico,
-            })
+    if isinstance(user, Visitante):
+        payload['data_cadastro'] = user.data_cadastro
+    elif isinstance(user, Funcionario):
+        payload.update({
+            'cargo': user.cargo,
+            'salario': str(user.salario),
+            'data_admissao': user.data_admissao,
+            'galeria': user.galeria_id,
+            'galeria_nome': user.galeria.nome if user.galeria else None,
+        })
+    elif isinstance(user, Artista):
+        payload.update({
+            'nacionalidade': user.nacionalidade,
+            'estilo_artistico': user.estilo_artistico,
+        })
 
     return payload
 
 
 def _get_user_instance(user_id):
-    """Busca usuário por PK ou retorna None se não existir."""
+    for model in _PROFILE_MODELS:
+        try:
+            queryset = model.objects.all()
+            if model is Funcionario:
+                queryset = queryset.select_related('galeria')
+            return queryset.get(pk=user_id)
+        except model.DoesNotExist:
+            continue
     try:
         return Usuario.objects.get(pk=user_id)
     except Usuario.DoesNotExist:
@@ -147,6 +149,9 @@ class LoginView(APIView):
                 {'detail': 'Usuario ou senha invalidos.'},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+
+        if isinstance(user, Funcionario):
+            user = Funcionario.objects.select_related('galeria').get(pk=user.pk)
 
         return Response(_user_payload(user))
 
