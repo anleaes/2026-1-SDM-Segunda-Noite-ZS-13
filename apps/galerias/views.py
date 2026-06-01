@@ -1,3 +1,5 @@
+"""ViewSets REST do app galerias."""
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -8,6 +10,8 @@ from .serializers import GaleriaSerializer
 
 
 class GaleriaViewSet(viewsets.ModelViewSet):
+    """CRUD de galerias."""
+
     queryset = Galeria.objects.all()
     serializer_class = GaleriaSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]

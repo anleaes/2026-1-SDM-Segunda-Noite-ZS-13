@@ -47,28 +47,17 @@ class AccountUpdateSerializer(serializers.Serializer):
     estilo_artistico = serializers.CharField(required=False, max_length=100, allow_blank=True)
 
     def update(self, user, validated_data):
-        role = None
-        if Artista.objects.filter(pk=user.pk).exists():
-            role = 'artista'
-            profile = Artista.objects.get(pk=user.pk)
-        elif Funcionario.objects.filter(pk=user.pk).exists():
-            profile = user
-        elif Visitante.objects.filter(pk=user.pk).exists():
-            profile = user
-        else:
-            profile = user
-
         for field in ('first_name', 'last_name', 'email', 'telefone', 'data_nascimento'):
             if field in validated_data:
-                setattr(profile, field, validated_data[field])
+                setattr(user, field, validated_data[field])
 
-        if role == 'artista':
+        if isinstance(user, Artista):
             for field in ('nacionalidade', 'estilo_artistico'):
                 if field in validated_data:
-                    setattr(profile, field, validated_data[field])
+                    setattr(user, field, validated_data[field])
 
-        profile.save()
-        return profile
+        user.save()
+        return user
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -85,12 +74,14 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class FuncionarioSerializer(serializers.ModelSerializer):
+    galeria_nome = serializers.CharField(source='galeria.nome', read_only=True, allow_null=True)
+
     class Meta:
         model = Funcionario
         fields = [
             'id', 'username', 'password', 'first_name', 'last_name', 'email',
             'data_nascimento', 'telefone', 'cpf',
-            'cargo', 'salario', 'data_admissao', 'galeria',
+            'cargo', 'salario', 'data_admissao', 'galeria', 'galeria_nome',
         ]
         extra_kwargs = {'password': {'write_only': True}}
 
@@ -100,6 +91,14 @@ class FuncionarioSerializer(serializers.ModelSerializer):
         funcionario.set_password(senha)
         funcionario.save()
         return funcionario
+
+    def update(self, instance, validated_data):
+        senha = validated_data.pop('password', None)
+        instance = super().update(instance, validated_data)
+        if senha:
+            instance.set_password(senha)
+            instance.save(update_fields=['password'])
+        return instance
 
 
 class VisitanteSerializer(serializers.ModelSerializer):
@@ -119,6 +118,14 @@ class VisitanteSerializer(serializers.ModelSerializer):
         visitante.save()
         return visitante
 
+    def update(self, instance, validated_data):
+        senha = validated_data.pop('password', None)
+        instance = super().update(instance, validated_data)
+        if senha:
+            instance.set_password(senha)
+            instance.save(update_fields=['password'])
+        return instance
+
 
 class ArtistaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -136,3 +143,11 @@ class ArtistaSerializer(serializers.ModelSerializer):
         artista.set_password(senha)
         artista.save()
         return artista
+
+    def update(self, instance, validated_data):
+        senha = validated_data.pop('password', None)
+        instance = super().update(instance, validated_data)
+        if senha:
+            instance.set_password(senha)
+            instance.save(update_fields=['password'])
+        return instance

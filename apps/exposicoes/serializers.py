@@ -4,6 +4,8 @@ from .models import Exposicao, ExposicaoObra
 
 
 class ExposicaoSerializer(serializers.ModelSerializer):
+    galeria_nome = serializers.CharField(source='galeria.nome', read_only=True)
+
     class Meta:
         model = Exposicao
         fields = '__all__'
@@ -13,12 +15,15 @@ class ExposicaoSerializer(serializers.ModelSerializer):
         data_fim = attrs.get('data_fim', getattr(self.instance, 'data_fim', None))
         if data_inicio and data_fim and data_fim < data_inicio:
             raise serializers.ValidationError(
-                'A data fim deve ser igual ou posterior à data início.'
+                'A data fim deve ser igual ou posterior à data início.',
             )
         return attrs
 
 
 class ExposicaoObraSerializer(serializers.ModelSerializer):
+    exposicao_titulo = serializers.CharField(source='exposicao.titulo', read_only=True)
+    obra_titulo = serializers.CharField(source='obra.titulo', read_only=True)
+
     class Meta:
         model = ExposicaoObra
         fields = '__all__'
