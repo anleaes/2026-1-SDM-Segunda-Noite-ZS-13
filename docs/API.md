@@ -4,6 +4,7 @@ Base URL local: `http://127.0.0.1:8000`
 
 | Prefixo | Recursos |
 |---------|----------|
+| `/api/health/` | Status da API e conexão com o banco (`GET`) |
 | `/api/auth/` | Login e tokens |
 | `/api/usuarios/` | Usuários |
 | `/api/funcionarios/` | Funcionários |

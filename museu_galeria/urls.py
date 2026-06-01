@@ -5,6 +5,8 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import RedirectView
 
+from museu_galeria.health import HealthCheckView
+
 from contas import urls as contas_urls
 from exposicoes import urls as exposicoes_urls
 from obras import urls as obras_urls
@@ -18,6 +20,7 @@ admin.site.site_url = settings.FRONTEND_URL
 urlpatterns = [
     path('', RedirectView.as_view(url=settings.FRONTEND_URL, permanent=False)),
     path('admin/', admin.site.urls),
+    path('api/health/', HealthCheckView.as_view(), name='api-health'),
     # Contas e autenticação
     path('api/auth/', include(contas_urls.auth_urlpatterns)),
     path('api/usuarios/', include(contas_urls.usuarios_urlpatterns)),
