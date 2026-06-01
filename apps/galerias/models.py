@@ -1,7 +1,10 @@
+"""Models de galerias físicas do museu."""
+
 from django.db import models
 
 
 class Galeria(models.Model):
+    """Galeria com endereço e status de abertura ao público."""
     nome = models.CharField(max_length=200)
     descricao = models.TextField(blank=True)
     endereco = models.CharField(max_length=300)
@@ -11,6 +14,7 @@ class Galeria(models.Model):
         db_table = 'museu_galeria'
         verbose_name = 'Galeria'
         verbose_name_plural = 'Galerias'
+        ordering = ['nome']
 
     def __str__(self):
         return self.nome

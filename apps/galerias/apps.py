@@ -2,6 +2,8 @@ from django.apps import AppConfig
 
 
 class GaleriasConfig(AppConfig):
+    """Configuração do app de galerias."""
+
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'galerias'
     verbose_name = 'Galerias'
