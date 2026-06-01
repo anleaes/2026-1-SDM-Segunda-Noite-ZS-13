@@ -1,8 +1,11 @@
+"""Models de exposições e obras em exposição."""
+
 from django.core.exceptions import ValidationError
 from django.db import models
 
 
 class Exposicao(models.Model):
+    """Exposição temporária em uma galeria."""
     STATUS_CHOICES = [
         ('planejada', 'Planejada'),
         ('em_andamento', 'Em andamento'),
@@ -24,6 +27,7 @@ class Exposicao(models.Model):
         db_table = 'museu_exposicao'
         verbose_name = 'Exposição'
         verbose_name_plural = 'Exposições'
+        ordering = ['-data_inicio', 'titulo']
 
     def __str__(self):
         return self.titulo
@@ -42,6 +46,8 @@ class Exposicao(models.Model):
 
 
 class ExposicaoObra(models.Model):
+    """Obra exibida em uma exposição, com posição e conservação."""
+
     exposicao = models.ForeignKey(
         Exposicao,
         on_delete=models.CASCADE,

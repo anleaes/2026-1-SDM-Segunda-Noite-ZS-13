@@ -1,3 +1,5 @@
+"""ViewSets REST do app obras (acervo e restauração)."""
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -13,6 +15,8 @@ from .serializers import (
 
 
 class ObraArteViewSet(viewsets.ModelViewSet):
+    """CRUD de obras de arte com filtros, busca e ordenação."""
+
     queryset = ObraArte.objects.select_related('categoria')
     serializer_class = ObraArteSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -22,6 +26,8 @@ class ObraArteViewSet(viewsets.ModelViewSet):
 
 
 class CertificadoAutenticidadeViewSet(viewsets.ModelViewSet):
+    """CRUD de certificados de autenticidade."""
+
     queryset = CertificadoAutenticidade.objects.select_related('obra')
     serializer_class = CertificadoAutenticidadeSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -31,6 +37,8 @@ class CertificadoAutenticidadeViewSet(viewsets.ModelViewSet):
 
 
 class ArtistaObraViewSet(viewsets.ModelViewSet):
+    """CRUD de vínculos entre artistas e obras."""
+
     queryset = ArtistaObra.objects.select_related('artista', 'obra')
     serializer_class = ArtistaObraSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -40,6 +48,8 @@ class ArtistaObraViewSet(viewsets.ModelViewSet):
 
 
 class RestauracaoViewSet(viewsets.ModelViewSet):
+    """CRUD de registros de restauração."""
+
     queryset = Restauracao.objects.select_related('obra', 'funcionario')
     serializer_class = RestauracaoSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
