@@ -1,7 +1,10 @@
+"""Models de galerias físicas do museu."""
+
 from django.db import models
 
 
 class Galeria(models.Model):
+    """Galeria com endereço e status de abertura ao público."""
     nome = models.CharField(max_length=200)
     descricao = models.TextField(blank=True)
     endereco = models.CharField(max_length=300)
