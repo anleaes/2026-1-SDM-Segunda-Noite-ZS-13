@@ -1,3 +1,5 @@
+"""ViewSets REST do app visitacao."""
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -13,6 +15,8 @@ from .serializers import (
 
 
 class IngressoViewSet(viewsets.ModelViewSet):
+    """CRUD de ingressos."""
+
     queryset = Ingresso.objects.select_related('visitante', 'exposicao')
     serializer_class = IngressoSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -22,6 +26,8 @@ class IngressoViewSet(viewsets.ModelViewSet):
 
 
 class ReservaViewSet(viewsets.ModelViewSet):
+    """CRUD de reservas."""
+
     queryset = Reserva.objects.select_related('visitante', 'exposicao')
     serializer_class = ReservaSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -31,6 +37,8 @@ class ReservaViewSet(viewsets.ModelViewSet):
 
 
 class AvaliacaoViewSet(viewsets.ModelViewSet):
+    """CRUD de avaliações de exposições."""
+
     queryset = Avaliacao.objects.select_related('visitante', 'exposicao')
     serializer_class = AvaliacaoSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -40,6 +48,8 @@ class AvaliacaoViewSet(viewsets.ModelViewSet):
 
 
 class PagamentoViewSet(viewsets.ModelViewSet):
+    """CRUD de pagamentos."""
+
     queryset = Pagamento.objects.select_related('ingresso', 'reserva', 'restauracao')
     serializer_class = PagamentoSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
