@@ -1,5 +1,6 @@
 """Models do acervo: obras, certificados, participação de artistas e restaurações."""
 
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
@@ -9,7 +10,11 @@ class ObraArte(models.Model):
     titulo = models.CharField(max_length=200)
     tecnica = models.CharField(max_length=100)
     ano_criacao = models.PositiveIntegerField()
-    valor_estimado = models.DecimalField(max_digits=12, decimal_places=2)
+    valor_estimado = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
     categoria = models.ForeignKey(
         'categorias.CategoriaObra',
         on_delete=models.PROTECT,
@@ -20,6 +25,7 @@ class ObraArte(models.Model):
         db_table = 'museu_obraarte'
         verbose_name = 'Obra de Arte'
         verbose_name_plural = 'Obras de Arte'
+        ordering = ['titulo']
 
     def __str__(self):
         return self.titulo
