@@ -14,6 +14,7 @@ class Galeria(models.Model):
         db_table = 'museu_galeria'
         verbose_name = 'Galeria'
         verbose_name_plural = 'Galerias'
+        ordering = ['nome']
 
     def __str__(self):
         return self.nome

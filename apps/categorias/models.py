@@ -12,6 +12,7 @@ class CategoriaObra(models.Model):
         db_table = 'museu_categoriaobra'
         verbose_name = 'Categoria de Obra'
         verbose_name_plural = 'Categorias de Obra'
+        ordering = ['nome']
 
     def __str__(self):
         return self.nome
