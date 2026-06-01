@@ -39,6 +39,11 @@ class ArtistaObraViewSet(viewsets.ModelViewSet):
     ordering_fields = ['data_participacao']
 
 
+class ArtistaViewSet(viewsets.ModelViewSet):
+    queryset = Artista.objects.all()
+    serializer_class = ArtistaSerializer
+
+
 class RestauracaoViewSet(viewsets.ModelViewSet):
     queryset = Restauracao.objects.select_related('obra', 'funcionario')
     serializer_class = RestauracaoSerializer
@@ -46,3 +51,5 @@ class RestauracaoViewSet(viewsets.ModelViewSet):
     filterset_fields = ['obra', 'funcionario']
     search_fields = ['obra__titulo', 'funcionario__username', 'descricao']
     ordering_fields = ['data_inicio', 'data_fim', 'custo']
+
+

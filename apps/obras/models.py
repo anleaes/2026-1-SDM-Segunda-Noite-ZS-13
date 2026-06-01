@@ -54,6 +54,12 @@ class CertificadoAutenticidade(models.Model):
     def validar_certificado(self):
         return bool(self.codigo and self.data_emissao)
 
+class Artista(models.Model):
+    nome = models.CharField(max_length=100)
+    nacionalidade = models.CharField(max_length=50)
+    estilo_artistico = models.CharField(max_length=100)
+
+
 
 class ArtistaObra(models.Model):
     artista = models.ForeignKey(

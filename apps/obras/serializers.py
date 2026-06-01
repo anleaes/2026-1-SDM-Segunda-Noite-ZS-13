@@ -5,6 +5,7 @@ from .models import (
     CertificadoAutenticidade,
     ObraArte,
     Restauracao,
+    Artista,
 )
 
 
@@ -23,6 +24,11 @@ class CertificadoAutenticidadeSerializer(serializers.ModelSerializer):
 class ArtistaObraSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArtistaObra
+        fields = '__all__'
+
+class ArtistaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Artista
         fields = '__all__'
 
 
