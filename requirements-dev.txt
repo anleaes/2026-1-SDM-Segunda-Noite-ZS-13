@@ -1,0 +1,3 @@
+# Dependências opcionais para desenvolvimento
+-r requirements.txt
+ipython>=8.0,<9.0

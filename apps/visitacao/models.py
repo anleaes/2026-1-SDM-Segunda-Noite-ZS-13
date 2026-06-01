@@ -1,9 +1,12 @@
+"""Models de visitação: ingressos, reservas, avaliações e pagamentos."""
+
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
 class Ingresso(models.Model):
+    """Ingresso de visitante para uma exposição."""
     TIPO_CHOICES = [
         ('inteira', 'Inteira'),
         ('meia', 'Meia'),
@@ -44,6 +47,8 @@ class Ingresso(models.Model):
 
 
 class Reserva(models.Model):
+    """Reserva de visita a uma exposição."""
+
     STATUS_CHOICES = [
         ('pendente', 'Pendente'),
         ('confirmada', 'Confirmada'),
@@ -82,6 +87,8 @@ class Reserva(models.Model):
 
 
 class Avaliacao(models.Model):
+    """Avaliação de exposição por um visitante (nota 1–5)."""
+
     visitante = models.ForeignKey(
         'contas.Visitante',
         on_delete=models.CASCADE,
@@ -117,6 +124,8 @@ class Avaliacao(models.Model):
 
 
 class Pagamento(models.Model):
+    """Pagamento vinculado a exatamente um: ingresso, reserva ou restauração."""
+
     METODO_CHOICES = [
         ('pix', 'PIX'),
         ('cartao', 'Cartão'),

@@ -2,6 +2,8 @@ from django.apps import AppConfig
 
 
 class CategoriasConfig(AppConfig):
+    """Configuração do app de categorias de obra."""
+
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'categorias'
     verbose_name = 'Categorias de obra'

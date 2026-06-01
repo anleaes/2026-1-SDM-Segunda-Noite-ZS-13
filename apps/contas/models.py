@@ -1,9 +1,12 @@
+"""Models de usuários: base, funcionário, visitante e artista."""
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 
 
 class Usuario(AbstractUser):
+    """Usuário base do sistema (credenciais e dados pessoais)."""
     data_nascimento = models.DateField(null=True, blank=True)
     telefone = models.CharField(max_length=20, blank=True)
     cpf = models.CharField(max_length=14, unique=True)
@@ -26,6 +29,8 @@ class Usuario(AbstractUser):
 
 
 class Funcionario(Usuario):
+    """Funcionário do museu, opcionalmente alocado a uma galeria."""
+
     cargo = models.CharField(max_length=100)
     salario = models.DecimalField(max_digits=10, decimal_places=2)
     data_admissao = models.DateField()
@@ -58,6 +63,8 @@ class Funcionario(Usuario):
 
 
 class Visitante(Usuario):
+    """Visitante com acesso a ingressos, reservas e avaliações."""
+
     data_cadastro = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -89,6 +96,8 @@ class Visitante(Usuario):
 
 
 class Artista(Usuario):
+    """Artista vinculado a obras do acervo."""
+
     nacionalidade = models.CharField(max_length=100)
     estilo_artistico = models.CharField(max_length=100)
 
