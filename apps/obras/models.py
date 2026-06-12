@@ -99,6 +99,7 @@ class Restauracao(models.Model):
         db_table = 'museu_restauracao'
         verbose_name = 'Restauração'
         verbose_name_plural = 'Restaurações'
+        ordering = ['-data_inicio', '-id']
 
     def __str__(self):
         return f'Restauração de {self.obra.titulo}'

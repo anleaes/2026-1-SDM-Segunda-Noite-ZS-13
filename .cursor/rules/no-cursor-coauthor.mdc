@@ -1,0 +1,8 @@
+---
+description: Nunca adicionar co-autor ou trailer do Cursor em commits
+alwaysApply: true
+---
+
+Nunca adicione `Co-authored-by: Cursor`, `Made-with: Cursor`, `cursoragent@cursor.com` ou qualquer atribuição do Cursor em mensagens de commit, PRs ou código.
+
+Ao commitar, use apenas `git commit -m "mensagem"` sem `--trailer`. Se a atribuição aparecer, remova com amend antes de push.

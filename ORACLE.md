@@ -18,6 +18,44 @@ Guia do que você precisa instalar e configurar para o Django conectar no Oracle
 
 ---
 
+## Ambiente Conda + Django (recomendado)
+
+O backend usa **Conda** (ambiente `museu-galeria`) com **Django 4.2**.
+
+### Primeira vez
+
+```bash
+cd /caminho/para/A3
+
+# Instalar Miniconda (se ainda não tiver): brew install --cask miniconda
+# Depois reinicie o terminal ou rode: eval "$(conda shell.zsh hook)"
+
+conda env create -f environment.yml
+conda activate museu-galeria
+cp .env.example .env   # ajuste ORACLE_PASSWORD e wallet
+python manage.py migrate
+python manage.py seed_demo
+```
+
+### Rodar o servidor
+
+```bash
+conda activate museu-galeria
+python manage.py runserver 0.0.0.0:8000
+```
+
+### Atualizar dependências
+
+```bash
+conda activate museu-galeria
+pip install -r requirements.txt
+# ou recriar: conda env update -f environment.yml --prune
+```
+
+> Alternativa legada: `.venv/` (venv) ainda funciona, mas o padrão do projeto passou a ser **Conda**.
+
+---
+
 ## 1. Banco Oracle
 
 Você precisa de **uma instância Oracle rodando**. Opções comuns:
