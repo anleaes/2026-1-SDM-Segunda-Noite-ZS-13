@@ -1,0 +1,50 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}Início{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h2>Painel do Backend</h2>
+  <p>
+    Esta área usa <strong>templates HTML Django</strong> (padrão MTV) para listar e gerenciar
+    todas as entidades do sistema. O app mobile consome a mesma base via <strong>API REST JSON</strong>.
+  </p>
+  <div class="stats">
+    <div class="stat-card">
+      <span class="stat-number">{{ total_models }}</span>
+      <span class="stat-label">módulos / models</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">CRUD</span>
+      <span class="stat-label">listar · detalhe · criar · editar · excluir</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">DRF</span>
+      <span class="stat-label">ViewSet + Serializer + Router</span>
+    </div>
+  </div>
+</section>
+
+<section class="section-block">
+  <h3>Todos os módulos do backend</h3>
+  <div class="grid-cards">
+    {% for s in sections %}
+    <article class="module-card">
+      <header>
+        <h4>{{ s.title }}</h4>
+        <span class="badge">{{ s.count }} registro{{ s.count|pluralize }}</span>
+      </header>
+      <dl class="meta-list">
+        <div><dt>Model</dt><dd><code>{{ s.model_name }}</code></dd></div>
+        <div><dt>Tabela</dt><dd><code>{{ s.db_table }}</code></dd></div>
+        <div><dt>API REST</dt><dd><code>{{ s.api_path }}</code></dd></div>
+        <div><dt>CRUD web</dt><dd>{% if s.allow_crud %}Sim{% else %}Somente leitura{% endif %}</dd></div>
+      </dl>
+      <footer class="card-actions">
+        <a class="btn btn-primary" href="{% url 'portal:list' s.slug %}">Abrir templates</a>
+      </footer>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

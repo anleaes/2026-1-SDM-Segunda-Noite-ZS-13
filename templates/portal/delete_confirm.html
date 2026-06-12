@@ -1,0 +1,25 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}Excluir {{ section.title }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Navegação">
+  <a href="{% url 'portal:home' %}">Início</a>
+  <span>/</span>
+  <a href="{% url 'portal:list' section.slug %}">{{ section.title }}</a>
+  <span>/</span>
+  <span>Excluir</span>
+</nav>
+
+<div class="confirm-card">
+  <h2>Confirmar exclusão</h2>
+  <p>Tem certeza que deseja excluir <strong>{{ obj }}</strong> (id {{ obj.pk }})?</p>
+  <p class="muted">Se houver registros relacionados com proteção (FK PROTECT), a exclusão será bloqueada.</p>
+
+  <form method="post" class="form-actions">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sim, excluir</button>
+    <a class="btn btn-ghost" href="{% url 'portal:detail' section.slug obj.pk %}">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

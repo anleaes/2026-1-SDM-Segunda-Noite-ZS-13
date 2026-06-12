@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Museu &amp; Galeria{% endblock %} — Backend Django</title>
+  <link rel="stylesheet" href="{% static 'portal/css/style.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <div>
+        <p class="eyebrow">Projeto A3 — SDM</p>
+        <h1 class="site-title"><a href="{% url 'portal:home' %}">Museu &amp; Galeria</a></h1>
+        <p class="site-subtitle">Templates Django (MTV) — espelho do backend + API REST</p>
+      </div>
+      <nav class="top-nav" aria-label="Principal">
+        <a href="{% url 'portal:home' %}">Início</a>
+        <a href="{% url 'portal:arquitetura' %}">Arquitetura MTV</a>
+        <a href="/admin/">Admin Django</a>
+        <a href="http://localhost:8081" target="_blank" rel="noopener">App React Native</a>
+      </nav>
+    </div>
+  </header>
+
+  {% if messages %}
+  <div class="container messages">
+    {% for message in messages %}
+    <p class="message message-{{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main id="conteudo" class="container main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Backend Django + DRF · Tabelas <code>MUSEU_*</code> · Fluxo: URL → View → Serializer → Model</p>
+    </div>
+  </footer>
+</body>
+</html>

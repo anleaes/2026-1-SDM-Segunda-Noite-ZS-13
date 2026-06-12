@@ -1,0 +1,47 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}{% if action == 'create' %}Novo{% else %}Editar{% endif %} {{ section.title }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Navegação">
+  <a href="{% url 'portal:home' %}">Início</a>
+  <span>/</span>
+  <a href="{% url 'portal:list' section.slug %}">{{ section.title }}</a>
+  <span>/</span>
+  <span>{% if action == 'create' %}Novo{% else %}Editar{% endif %}</span>
+</nav>
+
+<header class="page-header">
+  <h2>{% if action == 'create' %}Cadastrar{% else %}Editar{% endif %} {{ section.title }}</h2>
+</header>
+
+<div class="flow-box">
+  <strong>Fluxo desta tela (MTV clássico):</strong>
+  Form HTML (Template)
+  → POST → View <code>ModelCreateView</code> / <code>ModelUpdateView</code>
+  → <code>ModelForm</code> valida
+  → Model <code>.save()</code> no banco
+  · Na API REST o mesmo dado passa pelo <strong>Serializer</strong> em vez do form HTML.
+</div>
+
+<form method="post" class="form-card">
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+  <div class="form-errors">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  {% for field in form %}
+  <div class="form-field{% if field.errors %} has-error{% endif %}">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+    {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+    {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+  </div>
+  {% endfor %}
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a class="btn btn-ghost" href="{% url 'portal:list' section.slug %}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

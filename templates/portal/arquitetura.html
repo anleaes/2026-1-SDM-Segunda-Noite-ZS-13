@@ -1,0 +1,69 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}Arquitetura MTV{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h2>Arquitetura do Backend</h2>
+  <p>O projeto usa <strong>dois acessos</strong> aos mesmos models:</p>
+</section>
+
+<div class="arch-diagram">
+  <div class="arch-col">
+    <h3>1. Templates Django (esta área)</h3>
+    <pre>Browser → URL (/portal/...)
+       → View (portal/views.py)
+       → Model (apps/*/models.py)
+       → Template HTML
+       → resposta HTML</pre>
+  </div>
+  <div class="arch-col">
+    <h3>2. API REST (React Native)</h3>
+    <pre>App → HTTP JSON (/api/...)
+       → urls.py + Router
+       → ViewSet (apps/*/views.py)
+       → Serializer (apps/*/serializers.py)
+       → Model → JSON</pre>
+  </div>
+</div>
+
+<section class="section-block">
+  <h3>Mapa URL → View → Serializer → Model</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Módulo</th>
+          <th>Model</th>
+          <th>Tabela</th>
+          <th>API REST</th>
+          <th>Template web</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in sections %}
+        <tr>
+          <td>{{ s.title }}</td>
+          <td><code>{{ s.model_name }}</code></td>
+          <td><code>{{ s.db_table }}</code></td>
+          <td><code>{{ s.api_path }}</code></td>
+          <td><a href="{% url 'portal:list' s.slug %}">/portal/{{ s.slug }}/</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section-block">
+  <h3>Exemplo: Galerias</h3>
+  <ul class="file-list">
+    <li><code>apps/galerias/models.py</code> — class Galeria → tabela <code>museu_galeria</code></li>
+    <li><code>apps/galerias/serializers.py</code> — GaleriaSerializer (JSON)</li>
+    <li><code>apps/galerias/views.py</code> — GaleriaViewSet (API CRUD)</li>
+    <li><code>apps/galerias/urls.py</code> — SimpleRouter → ViewSet</li>
+    <li><code>templates/portal/list.html</code> — listagem HTML (esta área)</li>
+    <li><code>apps/portal/views.py</code> — ModelListView (View template)</li>
+  </ul>
+</section>
+{% endblock %}

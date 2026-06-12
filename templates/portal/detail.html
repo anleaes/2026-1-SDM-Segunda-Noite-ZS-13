@@ -1,0 +1,45 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}{{ section.title }} #{{ obj.pk }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Navegação">
+  <a href="{% url 'portal:home' %}">Início</a>
+  <span>/</span>
+  <a href="{% url 'portal:list' section.slug %}">{{ section.title }}</a>
+  <span>/</span>
+  <span>#{{ obj.pk }}</span>
+</nav>
+
+<header class="page-header">
+  <div>
+    <h2>{{ section.title }} — detalhe</h2>
+    <p class="muted">Registro <code>id={{ obj.pk }}</code></p>
+  </div>
+  <div class="page-actions">
+    <a class="btn btn-ghost" href="{% url 'portal:list' section.slug %}">← Voltar</a>
+    {% if section.allow_crud %}
+    <a class="btn btn-primary" href="{% url 'portal:edit' section.slug obj.pk %}">Editar</a>
+    <a class="btn btn-danger" href="{% url 'portal:delete' section.slug obj.pk %}">Excluir</a>
+    {% endif %}
+  </div>
+</header>
+
+<div class="flow-box">
+  <strong>Fluxo desta tela:</strong>
+  URL com <code>pk</code>
+  → View <code>ModelDetailView</code>
+  → Model <code>get_object_or_404</code>
+  → Template <code>detail.html</code>
+  · API equivalente: <code>GET {{ section.api_path }}{{ obj.pk }}/</code>
+</div>
+
+<div class="detail-grid">
+  {% for row in field_rows %}
+  <div class="detail-row">
+    <span class="detail-label">{{ row.name }}</span>
+    <span class="detail-value">{{ row.value }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

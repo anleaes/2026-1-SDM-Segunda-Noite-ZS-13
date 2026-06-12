@@ -1,0 +1,10 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}Não encontrado{% endblock %}
+
+{% block content %}
+<div class="confirm-card">
+  <h2>Módulo não encontrado</h2>
+  <p><a href="{% url 'portal:home' %}">Voltar ao início</a></p>
+</div>
+{% endblock %}

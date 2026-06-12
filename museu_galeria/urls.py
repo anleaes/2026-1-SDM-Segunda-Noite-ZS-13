@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic.base import RedirectView
-
 from contas import urls as contas_urls
 from exposicoes import urls as exposicoes_urls
 from obras import urls as obras_urls
@@ -14,7 +12,7 @@ admin.site.index_title = 'Administração'
 admin.site.site_url = settings.FRONTEND_URL
 
 urlpatterns = [
-    path('', RedirectView.as_view(url=settings.FRONTEND_URL, permanent=False)),
+    path('', include('portal.urls')),
     path('admin/', admin.site.urls),
     path('api/auth/', include(contas_urls.auth_urlpatterns)),
     path('api/usuarios/', include(contas_urls.usuarios_urlpatterns)),

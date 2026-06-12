@@ -1,0 +1,67 @@
+{% extends 'portal/base.html' %}
+
+{% block title %}{{ section.title }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Navegação">
+  <a href="{% url 'portal:home' %}">Início</a>
+  <span>/</span>
+  <span>{{ section.title }}</span>
+</nav>
+
+<header class="page-header">
+  <div>
+    <h2>{{ section.title }}</h2>
+    <p class="muted">
+      Model <code>{{ section.model_name }}</code> · API <code>{{ section.api_path }}</code>
+    </p>
+  </div>
+  <div class="page-actions">
+    {% if section.allow_crud %}
+    <a class="btn btn-primary" href="{% url 'portal:create' section.slug %}">+ Novo</a>
+    {% endif %}
+    <a class="btn btn-ghost" href="{% url 'portal:arquitetura' %}">Ver fluxo MTV</a>
+  </div>
+</header>
+
+<div class="flow-box">
+  <strong>Fluxo desta tela:</strong>
+  URL <code>/portal/{{ section.slug }}/</code>
+  → View <code>ModelListView</code>
+  → Model <code>{{ section.model_name }}.objects.all()</code>
+  → Template <code>list.html</code>
+</div>
+
+{% if rows %}
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        {% for f in fields %}
+        <th>{{ f }}</th>
+        {% endfor %}
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        {% for cell in row.cells %}
+        <td>{{ cell }}</td>
+        {% endfor %}
+        <td class="actions">
+          <a href="{% url 'portal:detail' section.slug row.obj.pk %}">Ver</a>
+          {% if section.allow_crud %}
+          · <a href="{% url 'portal:edit' section.slug row.obj.pk %}">Editar</a>
+          · <a class="danger" href="{% url 'portal:delete' section.slug row.obj.pk %}">Excluir</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty">Nenhum registro encontrado.{% if section.allow_crud %} <a href="{% url 'portal:create' section.slug %}">Criar o primeiro</a>.{% endif %}</p>
+{% endif %}
+{% endblock %}
